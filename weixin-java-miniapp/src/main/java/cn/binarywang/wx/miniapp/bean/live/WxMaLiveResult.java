@@ -20,7 +20,7 @@ import java.util.List;
 public class WxMaLiveResult implements Serializable {
   private static final long serialVersionUID = 1L;
   private Integer total;
-  private Integer auditId;
+  private Long auditId;
   private Integer goodsId;
   private List<Goods> goods;
 
@@ -101,6 +101,7 @@ public class WxMaLiveResult implements Serializable {
     private String anchorWechat;
     @SerializedName("anchor_img")
     private String anchorImg;
+    @SerializedName("live_type")
     private Integer type;
     @SerializedName("screen_type")
     private Integer screenType;
