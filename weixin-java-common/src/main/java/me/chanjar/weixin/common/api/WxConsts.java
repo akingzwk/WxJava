@@ -126,6 +126,11 @@ public class WxConsts {
      * 模板卡片消息.
      */
     public static final String TEMPLATE_CARD = "template_card";
+
+    /**
+     * 发送图文消息（点击跳转到图文消息页面）使用通过 “发布” 系列接口得到的 article_id(草稿箱功能上线后不再支持客服接口中带 media_id 的 mpnews 类型的图文消息)
+     */
+    public static final String MP_NEWS_ARTICLE = "mpnewsarticle";
   }
 
   /**
@@ -282,6 +287,10 @@ public class WxConsts {
      */
     public static final String CARD_USER_GIFTING_CARD = "user_gifting_card";
 
+    /**
+     * 异步安全校验事件
+     */
+    public static final String WXA_MEDIA_CHECK = "wxa_media_check";
 
     /**
      * 卡券事件：用户核销卡券
@@ -339,6 +348,11 @@ public class WxConsts {
      * 小程序审核事件：审核不通过
      */
     public static final String WEAPP_AUDIT_FAIL = "weapp_audit_fail";
+
+    /**
+     * 点击菜单跳转小程序的事件推送
+     */
+    public static final String VIEW_MINIPROGRAM = "view_miniprogram";
 
   }
 
