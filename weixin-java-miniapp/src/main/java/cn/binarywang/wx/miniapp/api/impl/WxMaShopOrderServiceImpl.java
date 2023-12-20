@@ -20,6 +20,7 @@ import java.text.Format;
 import java.util.Date;
 
 import static cn.binarywang.wx.miniapp.constant.WxMaApiUrlConstants.Shop.Order.*;
+import static me.chanjar.weixin.common.api.WxConsts.ERR_CODE;
 
 /**
  * @author boris
@@ -30,7 +31,6 @@ public class WxMaShopOrderServiceImpl implements WxMaShopOrderService {
 
   private final Format dateFormat = FastDateFormat.getInstance("yyyy-MM-dd HH:mm:ss");
 
-  private static final String ERR_CODE = "errcode";
   private static final String MATCH_KEY = "is_matched";
   private final WxMaService wxMaService;
 
@@ -56,7 +56,7 @@ public class WxMaShopOrderServiceImpl implements WxMaShopOrderService {
   }
 
   @Override
-  public WxMaShopGetOrderResponse getOrder(Integer orderId, String outOrderId, String openid) throws WxErrorException {
+  public WxMaShopGetOrderResponse getOrder(Long orderId, String outOrderId, String openid) throws WxErrorException {
     return this.post(ORDER_GET, GsonHelper.buildJsonObject("order_id", orderId, "out_order_id", outOrderId,
       "openid", openid), WxMaShopGetOrderResponse.class);
   }

@@ -10,7 +10,7 @@ import java.io.Serializable;
  * 商家转账结果
  *
  * @author zhongjun
- * @date 2022/6/17
+ * created on  2022/6/17
  **/
 @Data
 @NoArgsConstructor
@@ -34,4 +34,10 @@ public class TransferBatchesResult implements Serializable {
    */
   @SerializedName("create_time")
   private String createTime;
+
+  /**
+   * 批次状态
+   */
+  @SerializedName("batch_status")
+  private String batchStatus;
 }

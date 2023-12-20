@@ -13,18 +13,20 @@ import com.google.common.base.CaseFormat;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import lombok.RequiredArgsConstructor;
-import org.apache.commons.beanutils.BeanMap;
 import org.apache.commons.lang3.StringUtils;
 
+import java.beans.BeanInfo;
+import java.beans.IntrospectionException;
+import java.beans.Introspector;
+import java.beans.PropertyDescriptor;
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.nio.charset.StandardCharsets;
 import java.security.GeneralSecurityException;
 import java.text.DateFormat;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 
 @RequiredArgsConstructor
 public class EcommerceServiceImpl implements EcommerceService {
@@ -178,6 +180,16 @@ public class EcommerceServiceImpl implements EcommerceService {
   @Override
   public FundBalanceResult subNowBalance(String subMchid) throws WxPayException {
     String url = String.format("%s/v3/ecommerce/fund/balance/%s", this.payService.getPayBaseUrl(), subMchid);
+    String response = this.payService.getV3(url);
+    return GSON.fromJson(response, FundBalanceResult.class);
+  }
+
+  @Override
+  public FundBalanceResult subNowBalance(String subMchid, SpAccountTypeEnum accountType) throws WxPayException {
+    String url = String.format("%s/v3/ecommerce/fund/balance/%s", this.payService.getPayBaseUrl(), subMchid);
+    if (Objects.nonNull(accountType)) {
+      url += "?account_type=" + accountType.getValue();
+    }
     String response = this.payService.getV3(url);
     return GSON.fromJson(response, FundBalanceResult.class);
   }
@@ -385,7 +397,7 @@ public class EcommerceServiceImpl implements EcommerceService {
    * @return 拼接好的string
    */
   private String parseURLPair(Object o) {
-    Map<Object, Object> map = new BeanMap(o);
+    Map<Object, Object> map = getObjectToMap(o);
     Set<Map.Entry<Object, Object>> set = map.entrySet();
     Iterator<Map.Entry<Object, Object>> it = set.iterator();
     StringBuilder sb = new StringBuilder();
@@ -397,6 +409,29 @@ public class EcommerceServiceImpl implements EcommerceService {
       }
     }
     return sb.deleteCharAt(sb.length() - 1).toString();
+  }
+
+  public static Map<Object, Object> getObjectToMap(Object obj) {
+    try {
+      Map<Object, Object> result = new LinkedHashMap<>();
+      final Class<? extends Object> beanClass = obj.getClass();
+      final BeanInfo beanInfo = Introspector.getBeanInfo(beanClass);
+      final PropertyDescriptor[] propertyDescriptors = beanInfo.getPropertyDescriptors();
+      if (propertyDescriptors != null) {
+        for (final PropertyDescriptor propertyDescriptor : propertyDescriptors) {
+          if (propertyDescriptor != null) {
+            final String name = propertyDescriptor.getName();
+            final Method readMethod = propertyDescriptor.getReadMethod();
+            if (readMethod != null) {
+              result.put(name, readMethod.invoke(obj));
+            }
+          }
+        }
+      }
+      return result;
+    } catch (IllegalAccessException | IntrospectionException | InvocationTargetException ignored) {
+      return null;
+    }
   }
 
 }

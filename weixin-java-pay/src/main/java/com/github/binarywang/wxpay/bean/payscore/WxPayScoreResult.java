@@ -11,7 +11,7 @@ import java.util.Map;
 
 /**
  * @author doger.wang
- * @date 2020/5/12 17:05
+ * created on  2020/5/12 17:05
  */
 @NoArgsConstructor
 @Data
@@ -86,7 +86,7 @@ public class WxPayScoreResult implements Serializable {
   private Map<String, String> payScoreSignInfo;
 
   @SerializedName("openid")
-  private String openId;
+  private String openid;
 
   @SerializedName("apply_permissions_token")
   private String applyPermissionsToken;
@@ -103,8 +103,29 @@ public class WxPayScoreResult implements Serializable {
   @SerializedName("authorization_success_time")
   private String authorizationSuccessTime;
 
-  @SerializedName("openid")
-  private String openid;
+  /**
+   * 用户分层
+   */
+  @SerializedName("user_risk_level")
+  private Integer userRiskLevel;
+
+  /**
+   * 分层版本
+   */
+  @SerializedName("risk_level_version")
+  private Integer riskLevelVersion;
+
+  /**
+   * 总金额
+   */
+  @SerializedName("total_amount")
+  private Integer totalAmount;
+
+  /**
+   * 渠道商商户号
+   */
+  @SerializedName("channel_id")
+  private String channelId;
 
   /**
    * 收款信息

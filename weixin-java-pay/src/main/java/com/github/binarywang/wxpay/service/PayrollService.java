@@ -1,13 +1,14 @@
 package com.github.binarywang.wxpay.service;
 
 import com.github.binarywang.wxpay.bean.marketing.payroll.*;
+import com.github.binarywang.wxpay.bean.result.WxPayApplyBillV3Result;
 import com.github.binarywang.wxpay.exception.WxPayException;
 
 /**
  * 微工卡-对接微信api
  *
  * @author xiaoqiang
- * @date 2021/12/7 14:26
+ * created on  2021/12/7 14:26
  */
 public interface PayrollService {
   /**
@@ -98,6 +99,6 @@ public interface PayrollService {
    * @return 返回数据
    * @throws WxPayException the wx pay exception
    */
-  PreOrderWithAuthResult merchantFundWithdrawBillType(String billType, String billDate) throws WxPayException;
+  WxPayApplyBillV3Result merchantFundWithdrawBillType(String billType, String billDate, String tarType) throws WxPayException;
 
 }

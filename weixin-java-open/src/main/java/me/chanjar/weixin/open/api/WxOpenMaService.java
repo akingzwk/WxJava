@@ -3,8 +3,10 @@ package me.chanjar.weixin.open.api;
 import cn.binarywang.wx.miniapp.api.WxMaService;
 import cn.binarywang.wx.miniapp.bean.WxMaAuditMediaUploadResult;
 import me.chanjar.weixin.common.error.WxErrorException;
+import me.chanjar.weixin.open.bean.ma.WxMaPrefetchDomain;
 import me.chanjar.weixin.open.bean.ma.WxMaScheme;
 import me.chanjar.weixin.open.bean.message.WxOpenMaSubmitAuditMessage;
+import me.chanjar.weixin.open.bean.message.WxOpenMaVerifyBetaWeappMessage;
 import me.chanjar.weixin.open.bean.result.*;
 
 import java.io.File;
@@ -12,13 +14,10 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * <pre>
- *     微信开放平台代小程序实现服务能力
- *     https://open.weixin.qq.com/cgi-bin/showdocument?action=dir_list&t=resource/res_list&verify=1&id=open1489144594_DhNoV&token=&lang=zh_CN
- * </pre>
+ * <a href="https://open.weixin.qq.com/cgi-bin/showdocument?action=dir_list&t=resource/res_list&verify=1&id=open1489144594_DhNoV&token=&lang=zh_CN">微信开放平台代小程序实现服务能力</a>
  *
  * @author yqx
- * @date 2018 /9/12
+ * created on  2018 /9/12
  */
 public interface WxOpenMaService extends WxMaService {
   /**
@@ -43,6 +42,11 @@ public interface WxOpenMaService extends WxMaService {
    * </pre>
    */
   String API_SET_WEBVIEW_DOMAIN = "https://api.weixin.qq.com/wxa/setwebviewdomain";
+
+  /**
+   * 获取业务域名校验文件（仅供第三方代小程序调用）
+   */
+  String API_GET_WEBVIEW_DOMAIN_CONFIRM_FILE = "https://api.weixin.qq.com/wxa/get_webviewdomain_confirmfile";
 
   /**
    * 获取帐号基本信息
@@ -73,7 +77,7 @@ public interface WxOpenMaService extends WxMaService {
   /**
    * 以下接口基础信息设置
    * <p>
-   * https://open.weixin.qq.com/cgi-bin/showdocument?action=dir_list&t=resource/res_list&verify=1&id=21517799059ZSEMr&token=6f965b5daf30a98a6bbd2a386faea5c934e929bf&lang=zh_CN
+   * <a href="https://open.weixin.qq.com/cgi-bin/showdocument?action=dir_list&t=resource/res_list&verify=1&id=21517799059ZSEMr&token=6f965b5daf30a98a6bbd2a386faea5c934e929bf&lang=zh_CN">...</a>
    * </p>
    * 1. 设置小程序隐私设置（是否可被搜索）
    */
@@ -98,7 +102,7 @@ public interface WxOpenMaService extends WxMaService {
   /**
    * 以下接口为三方平台代小程序实现的代码管理功能
    * <p>
-   * https://open.weixin.qq.com/cgi-bin/showdocument?action=dir_list&t=resource/res_list&verify=1&id=open1489140610_Uavc4&token=fe774228c66725425675810097f9e48d0737a4bf&lang=zh_CN
+   * <a href="https://open.weixin.qq.com/cgi-bin/showdocument?action=dir_list&t=resource/res_list&verify=1&id=open1489140610_Uavc4&token=fe774228c66725425675810097f9e48d0737a4bf&lang=zh_CN">...</a>
    * </p>
    * 1. 为授权的小程序帐号上传小程序代码
    */
@@ -110,17 +114,22 @@ public interface WxOpenMaService extends WxMaService {
   String API_TEST_QRCODE = "https://api.weixin.qq.com/wxa/get_qrcode";
 
   /**
-   * 3. 获取授权小程序帐号的可选类目
+   * 3. 试用小程序快速认证
+   */
+  String API_VERIFY_BETA_WEAPP = "https://api.weixin.qq.com/wxa/verifybetaweapp";
+
+  /**
+   * 4. 获取授权小程序帐号的可选类目
    */
   String API_GET_CATEGORY = "https://api.weixin.qq.com/wxa/get_category";
 
   /**
-   * 4. 获取小程序的第三方提交代码的页面配置（仅供第三方开发者代小程序调用）
+   * 5. 获取小程序的第三方提交代码的页面配置（仅供第三方开发者代小程序调用）
    */
   String API_GET_PAGE = "https://api.weixin.qq.com/wxa/get_page";
 
   /**
-   * 5. 将第三方提交的代码包提交审核（仅供第三方开发者代小程序调用）
+   * 6. 将第三方提交的代码包提交审核（仅供第三方开发者代小程序调用）
    */
   String API_SUBMIT_AUDIT = "https://api.weixin.qq.com/wxa/submit_audit";
 
@@ -140,9 +149,14 @@ public interface WxOpenMaService extends WxMaService {
   String API_RELEASE = "https://api.weixin.qq.com/wxa/release";
 
   /**
-   * 10. 修改小程序线上代码的可见状态（仅供第三方代小程序调用)
+   * 10.1 修改小程序线上代码的可见状态（仅供第三方代小程序调用)
    */
   String API_CHANGE_VISITSTATUS = "https://api.weixin.qq.com/wxa/change_visitstatus";
+
+  /**
+   * 10.2 查询小程序线上代码的可见状态（仅供第三方代小程序调用)
+   */
+  String API_GET_VISITSTATUS = "https://api.weixin.qq.com/wxa/getvisitstatus";
 
   /**
    * 11.小程序版本回退（仅供第三方代小程序调用）
@@ -162,7 +176,7 @@ public interface WxOpenMaService extends WxMaService {
   /**
    * 14.设置小程序“扫普通链接二维码打开小程序”能力
    * <p>
-   * https://mp.weixin.qq.com/debug/wxadoc/introduction/qrcode.html
+   * <a href="https://mp.weixin.qq.com/debug/wxadoc/introduction/qrcode.html">...</a>
    * 14.1 增加或修改二维码规则
    */
   String API_QRCODE_JUMP_ADD = "https://api.weixin.qq.com/cgi-bin/wxopen/qrcodejumpadd";
@@ -238,18 +252,26 @@ public interface WxOpenMaService extends WxMaService {
    */
   String API_AUDIT_UPLOAD_MEDIA = "https://api.weixin.qq.com/wxa/uploadmedia";
 
+
   /**
-   * 小程序管理-获取公众号关联的小程序
+   * 小程序管理-查询小程序版本信息
    */
-  String API_WX_AMP_LINK_GET = "https://api.weixin.qq.com/cgi-bin/wxopen/wxamplinkget";
+  String API_GET_VERSION_INFO = "https://api.weixin.qq.com/wxa/getversioninfo";
+
   /**
-   * 小程序管理-关联小程序
+   * 设置DNS预解析域名
    */
-  String API_WX_AMP_LINK_CREATE = "https://api.weixin.qq.com/cgi-bin/wxopen/wxamplink";
+  String API_WX_SET_PREFETCH_DOMAIN = "https://api.weixin.qq.com/wxa/set_prefetchdnsdomain";
+
   /**
-   * 小程序管理-解除已关联的小程序
+   * 获取DNS预解析域名
    */
-  String API_WX_AMP_LINK_UN = "https://api.weixin.qq.com/cgi-bin/wxopen/wxampunlink";
+  String API_GET_PREFETCH_DOMAIN = "https://api.weixin.qq.com/wxa/get_prefetchdnsdomain";
+
+  /**
+   * 申请开通直播
+   */
+  String API_WX_APPLY_LIVE_INFO = "https://api.weixin.qq.com/wxa/business/applyliveinfo";
 
   /**
    * 获得小程序的域名配置信息
@@ -261,17 +283,21 @@ public interface WxOpenMaService extends WxMaService {
 
   /**
    * 修改域名
+   * <a href="https://developers.weixin.qq.com/doc/oplatform/Third-party_Platforms/2.0/api/Mini_Program_Basic_Info/Server_Address_Configuration.html">文档地址</a>
    *
    * @param action           delete删除, set覆盖, get获取
-   * @param requestDomains   the requestdomain list
-   * @param wsRequestDomains the wsrequestdomain list
-   * @param uploadDomains    the uploaddomain list
-   * @param downloadDomains  the downloaddomain list
+   * @param requestDomains   request 合法域名；当 action 是 get 时不需要此字段
+   * @param wsRequestDomains socket 合法域名；当 action 是 get 时不需要此字段
+   * @param uploadDomains    uploadFile 合法域名；当 action 是 get 时不需要此字段
+   * @param downloadDomains  downloadFile 合法域名；当 action 是 get 时不需要此字段
+   * @param tcpDomains       tcp 合法域名；当 action 是 get 时不需要此字段
+   * @param udpDomains       udp 合法域名；当 action 是 get 时不需要此字段
    * @return the wx open ma domain result
    * @throws WxErrorException the wx error exception
    */
   WxOpenMaDomainResult modifyDomain(String action, List<String> requestDomains, List<String> wsRequestDomains,
-                                    List<String> uploadDomains, List<String> downloadDomains) throws WxErrorException;
+                                    List<String> uploadDomains, List<String> downloadDomains,
+                                    List<String> udpDomains, List<String> tcpDomains) throws WxErrorException;
 
   /**
    * 获取小程序的业务域名
@@ -308,6 +334,14 @@ public interface WxOpenMaService extends WxMaService {
    * @throws WxErrorException the wx error exception
    */
   WxOpenMaWebDomainResult setWebViewDomainInfo(String action, List<String> domainList) throws WxErrorException;
+
+  /**
+   * 获取业务域名校验文件
+   *
+   * @return 业务域名校验文件信息
+   * @throws WxErrorException 操作失败时抛出，具体错误码请看文档
+   */
+  WxOpenMaDomainConfirmFileResult getWebviewDomainConfirmFile() throws WxErrorException;
 
   /**
    * 获取小程序的信息
@@ -415,6 +449,15 @@ public interface WxOpenMaService extends WxMaService {
   File getTestQrcode(String pagePath, Map<String, String> params) throws WxErrorException;
 
   /**
+   * 试用小程序快速认证
+   *
+   * @param verifyBetaWeappMessage the verify mini program message
+   * @return the wx open result
+   * @throws WxErrorException the wx error exception
+   */
+  WxOpenResult verifyBetaWeapp(WxOpenMaVerifyBetaWeappMessage verifyBetaWeappMessage) throws WxErrorException;
+
+  /**
    * 获取授权小程序帐号的可选类目
    * <p>
    * 注意：该接口可获取已设置的二级类目及用于代码审核的可选三级类目。
@@ -471,13 +514,21 @@ public interface WxOpenMaService extends WxMaService {
   WxOpenResult releaseAudited() throws WxErrorException;
 
   /**
-   * 10. 修改小程序线上代码的可见状态（仅供第三方代小程序调用）
+   * 10.1 修改小程序线上代码的可见状态（仅供第三方代小程序调用）
    *
    * @param action the action
    * @return the wx open result
    * @throws WxErrorException the wx error exception
    */
   WxOpenResult changeVisitStatus(String action) throws WxErrorException;
+
+  /**
+   * 10.2 查询小程序服务状态（仅供第三方代小程序调用）
+   *
+   * @return 小程序服务状态
+   * @throws WxErrorException 查询失败时返回，具体错误码请看此接口的注释文档
+   */
+  WxOpenMaVisitStatusResult getVisitStatus() throws WxErrorException;
 
   /**
    * 11. 小程序版本回退（仅供第三方代小程序调用）
@@ -653,6 +704,13 @@ public interface WxOpenMaService extends WxMaService {
   WxOpenMaPrivacyService getPrivacyService();
 
   /**
+   * 购物订单
+   *
+   * @return 购物订单服务
+   */
+  WxOpenMaShoppingOrdersService getShoppingOrdersService();
+
+  /**
    * 小程序审核 提审素材上传接口
    *
    * @return
@@ -660,46 +718,38 @@ public interface WxOpenMaService extends WxMaService {
   WxMaAuditMediaUploadResult uploadMedia(File file) throws WxErrorException;
 
   /**
-   * <pre>
-   * 获取公众号关联的小程序
-   * 请求方式：POST(HTTPS)
-   * 请求地址：<a href="https://api.weixin.qq.com/cgi-bin/wxopen/wxamplinkget?access_token=TOKEN">https://api.weixin.qq.com/cgi-bin/wxopen/wxamplinkget?access_token=TOKEN</a>
-   * 文档地址：<a href="https://developers.weixin.qq.com/doc/oplatform/Third-party_Platforms/2.0/api/Official__Accounts/Mini_Program_Management_Permission.html">https://developers.weixin.qq.com/doc/oplatform/Third-party_Platforms/2.0/api/Official__Accounts/Mini_Program_Management_Permission.html</a>
-   * <pre>
-   * @return 公众号关联的小程序
+   * 查询小程序版本信息
+   *
+   * @return the wx open result
+   * @throws WxErrorException the wx error exception
    */
-  WxAmpLinkResult getWxAmpLink() throws WxErrorException;
+  WxOpenVersioninfoResult getVersionInfo() throws WxErrorException;
 
   /**
-   * <pre>
-   * 关联小程序
-   * 关联流程（需要公众号和小程序管理员双方确认）：
-   * 1、第三方平台调用接口发起关联
-   * 2、公众号管理员收到模板消息，同意关联小程序。
-   * 3、小程序管理员收到模板消息，同意关联公众号。
-   * 4、关联成功
-   * 等待管理员同意的中间状态可使用“获取公众号关联的小程序”接口进行查询。
-   * 请求方式：POST(HTTPS)
-   * 请求地址：<a href="https://api.weixin.qq.com/cgi-bin/wxopen/wxamplink?access_token=TOKEN">https://api.weixin.qq.com/cgi-bin/wxopen/wxamplink?access_token=TOKEN</a>
-   * 文档地址：<a href="https://developers.weixin.qq.com/doc/oplatform/Third-party_Platforms/2.0/api/Official__Accounts/Mini_Program_Management_Permission.html">https://developers.weixin.qq.com/doc/oplatform/Third-party_Platforms/2.0/api/Official__Accounts/Mini_Program_Management_Permission.html</a>
-   * <pre>
-   * @param appid 小程序 appid
-   * @param notifyUsers 是否发送模板消息通知公众号粉丝
-   * @param showProfile 是否展示公众号主页中
-   * @return 响应结果
+   * 设置DNS预解析域名
+   *
+   * @param domain 预解析域名列表
+   * @return {@link WxOpenResult}
+   * @throws WxErrorException the wx error exception
    */
-  WxOpenResult wxAmpLink(String appid, String notifyUsers, String showProfile) throws WxErrorException;
+  WxOpenResult setPrefetchDomain(WxMaPrefetchDomain domain) throws WxErrorException;
 
   /**
-   * <pre>
-   * 解除已关联的小程序
-   * 请求方式：POST(HTTPS)
-   * 请求地址：<a href="https://api.weixin.qq.com/cgi-bin/wxopen/wxampunlink?access_token=TOKEN">https://api.weixin.qq.com/cgi-bin/wxopen/wxampunlink?access_token=TOKEN</a>
-   * 文档地址：<a href="https://developers.weixin.qq.com/doc/oplatform/Third-party_Platforms/2.0/api/Official__Accounts/Mini_Program_Management_Permission.html">https://developers.weixin.qq.com/doc/oplatform/Third-party_Platforms/2.0/api/Official__Accounts/Mini_Program_Management_Permission.html</a>
-   * <pre>
-   * @param appid 小程序 appid
-   * @return 响应结果
+   * 获取DNS预解析域名
+   *
+   * @return {@link WxOpenMaPrefetchDomainResult}
+   * @throws WxErrorException he wx error exception
    */
-  WxOpenResult wxAmpUnLink(String appid) throws WxErrorException;
+  WxOpenMaPrefetchDomainResult getPrefetchDomain() throws WxErrorException;
+
+  /**
+   * 申请开通直播
+   * 文档地址：
+   * <a href="https://developers.weixin.qq.com/doc/oplatform/openApi/OpenApiDoc/miniprogram-management/live-player/applyLivelnfo.html">https://developers.weixin.qq.com/doc/oplatform/openApi/OpenApiDoc/miniprogram-management/live-player/applyLivelnfo.html</a>
+   *
+   * @return {@link WxOpenMaApplyLiveInfoResult}
+   * @throws WxErrorException the wx error exception
+   */
+  WxOpenMaApplyLiveInfoResult applyLiveInfo() throws WxErrorException;
 
 }

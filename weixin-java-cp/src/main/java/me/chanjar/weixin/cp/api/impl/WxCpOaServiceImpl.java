@@ -24,8 +24,7 @@ import static me.chanjar.weixin.cp.constant.WxCpApiPathConsts.Oa.*;
 /**
  * 企业微信 OA 接口实现
  *
- * @author Element
- * @date 2019-04-06 11:20
+ * @author Element  created on  2019-04-06 11:20
  */
 @RequiredArgsConstructor
 public class WxCpOaServiceImpl implements WxCpOaService {
@@ -42,7 +41,8 @@ public class WxCpOaServiceImpl implements WxCpOaService {
   }
 
   @Override
-  public List<WxCpCheckinData> getCheckinData(Integer openCheckinDataType, @NonNull Date startTime, @NonNull Date endTime,
+  public List<WxCpCheckinData> getCheckinData(Integer openCheckinDataType, @NonNull Date startTime,
+                                              @NonNull Date endTime,
                                               List<String> userIdList) throws WxErrorException {
     if (userIdList == null || userIdList.size() > USER_IDS_LIMIT) {
       throw new WxRuntimeException("用户列表不能为空，不超过 " + USER_IDS_LIMIT + " 个，若用户超过 " + USER_IDS_LIMIT + " 个，请分批获取");
@@ -153,7 +153,43 @@ public class WxCpOaServiceImpl implements WxCpOaService {
 
   @Override
   public WxCpApprovalInfo getApprovalInfo(@NonNull Date startTime, @NonNull Date endTime) throws WxErrorException {
-    return this.getApprovalInfo(startTime, endTime, null, null, null);
+    return this.getApprovalInfo(startTime, endTime, 0, null, null);
+  }
+
+  @Override
+  public WxCpApprovalInfo getApprovalInfo(@NonNull Date startTime, @NonNull Date endTime, String newCursor,
+                                          Integer size, List<WxCpApprovalInfoQueryFilter> filters)
+    throws WxErrorException {
+    if (newCursor == null) {
+      newCursor = "";
+    }
+
+    if (size == null) {
+      size = 100;
+    }
+
+    if (size < 0 || size > 100) {
+      throw new IllegalArgumentException("size参数错误,请使用[1-100]填充，默认100");
+    }
+
+    JsonObject jsonObject = new JsonObject();
+    jsonObject.addProperty("starttime", startTime.getTime() / 1000L);
+    jsonObject.addProperty("endtime", endTime.getTime() / 1000L);
+    jsonObject.addProperty("size", size);
+    jsonObject.addProperty("new_cursor", newCursor);
+
+    if (filters != null && !filters.isEmpty()) {
+      JsonArray filterJsonArray = new JsonArray();
+      for (WxCpApprovalInfoQueryFilter filter : filters) {
+        filterJsonArray.add(new JsonParser().parse(filter.toJson()));
+      }
+      jsonObject.add("filters", filterJsonArray);
+    }
+
+    final String url = this.mainService.getWxCpConfigStorage().getApiUrl(GET_APPROVAL_INFO);
+    String responseContent = this.mainService.post(url, jsonObject.toString());
+
+    return WxCpGsonBuilder.create().fromJson(responseContent, WxCpApprovalInfo.class);
   }
 
   @Override
@@ -197,7 +233,8 @@ public class WxCpOaServiceImpl implements WxCpOaService {
   }
 
   @Override
-  public WxCpBaseResp setOneUserQuota(@NonNull String userId, @NonNull Integer vacationId, @NonNull Integer leftDuration, @NonNull Integer timeAttr, String remarks) throws WxErrorException {
+  public WxCpBaseResp setOneUserQuota(@NonNull String userId, @NonNull Integer vacationId,
+                                      @NonNull Integer leftDuration, @NonNull Integer timeAttr, String remarks) throws WxErrorException {
     final String url = this.mainService.getWxCpConfigStorage().getApiUrl(SET_ONE_USER_QUOTA);
     JsonObject jsonObject = new JsonObject();
     jsonObject.addProperty("userid", userId);
@@ -250,16 +287,31 @@ public class WxCpOaServiceImpl implements WxCpOaService {
   }
 
   @Override
-  public WxCpTemplateResult getTemplateDetail(@NonNull String templateId) throws WxErrorException {
+  public WxCpOaApprovalTemplateResult getTemplateDetail(@NonNull String templateId) throws WxErrorException {
     JsonObject jsonObject = new JsonObject();
     jsonObject.addProperty("template_id", templateId);
     final String url = this.mainService.getWxCpConfigStorage().getApiUrl(GET_TEMPLATE_DETAIL);
     String responseContent = this.mainService.post(url, jsonObject.toString());
-    return WxCpGsonBuilder.create().fromJson(responseContent, WxCpTemplateResult.class);
+    return WxCpGsonBuilder.create().fromJson(responseContent, WxCpOaApprovalTemplateResult.class);
   }
 
   @Override
-  public List<WxCpCheckinDayData> getCheckinDayData(@NonNull Date startTime, @NonNull Date endTime, List<String> userIdList)
+  public String createOaApprovalTemplate(WxCpOaApprovalTemplate cpTemplate) throws WxErrorException {
+    final String url = this.mainService.getWxCpConfigStorage().getApiUrl(CREATE_TEMPLATE);
+    String responseContent = this.mainService.post(url, WxCpGsonBuilder.create().toJson(cpTemplate));
+    JsonObject tmpJson = GsonParser.parse(responseContent);
+    return tmpJson.get("template_id").getAsString();
+  }
+
+  @Override
+  public void updateOaApprovalTemplate(WxCpOaApprovalTemplate wxCpTemplate) throws WxErrorException {
+    final String url = this.mainService.getWxCpConfigStorage().getApiUrl(UPDATE_TEMPLATE);
+    this.mainService.post(url, WxCpGsonBuilder.create().toJson(wxCpTemplate));
+  }
+
+  @Override
+  public List<WxCpCheckinDayData> getCheckinDayData(@NonNull Date startTime, @NonNull Date endTime,
+                                                    List<String> userIdList)
     throws WxErrorException {
     if (userIdList == null || userIdList.size() > USER_IDS_LIMIT) {
       throw new WxRuntimeException("用户列表不能为空，不超过 " + USER_IDS_LIMIT + " 个，若用户超过 " + USER_IDS_LIMIT + " 个，请分批获取");
@@ -289,7 +341,8 @@ public class WxCpOaServiceImpl implements WxCpOaService {
   }
 
   @Override
-  public List<WxCpCheckinMonthData> getCheckinMonthData(@NonNull Date startTime, @NonNull Date endTime, List<String> userIdList)
+  public List<WxCpCheckinMonthData> getCheckinMonthData(@NonNull Date startTime, @NonNull Date endTime,
+                                                        List<String> userIdList)
     throws WxErrorException {
     if (userIdList == null || userIdList.size() > USER_IDS_LIMIT) {
       throw new WxRuntimeException("用户列表不能为空，不超过 " + USER_IDS_LIMIT + " 个，若用户超过 " + USER_IDS_LIMIT + " 个，请分批获取");
@@ -319,7 +372,8 @@ public class WxCpOaServiceImpl implements WxCpOaService {
   }
 
   @Override
-  public List<WxCpCheckinSchedule> getCheckinScheduleList(@NonNull Date startTime, @NonNull Date endTime, List<String> userIdList)
+  public List<WxCpCheckinSchedule> getCheckinScheduleList(@NonNull Date startTime, @NonNull Date endTime,
+                                                          List<String> userIdList)
     throws WxErrorException {
     if (userIdList == null || userIdList.size() > USER_IDS_LIMIT) {
       throw new WxRuntimeException("用户列表不能为空，不超过 " + USER_IDS_LIMIT + " 个，若用户超过 " + USER_IDS_LIMIT + " 个，请分批获取");

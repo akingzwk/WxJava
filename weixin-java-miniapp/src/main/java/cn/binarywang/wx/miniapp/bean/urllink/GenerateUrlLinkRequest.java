@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.experimental.Accessors;
 
 import java.io.Serializable;
 
@@ -17,6 +18,7 @@ import java.io.Serializable;
  */
 @Data
 @Builder
+@Accessors(chain = true)
 @NoArgsConstructor
 @AllArgsConstructor
 public class GenerateUrlLinkRequest implements Serializable {
@@ -74,7 +76,7 @@ public class GenerateUrlLinkRequest implements Serializable {
    * </pre>
    */
   @SerializedName("expire_time")
-  private Integer expireTime;
+  private Long expireTime;
 
   /**
    * 到期失效的URL Link的失效间隔天数。生成的到期失效URL Link在该间隔时间到达前有效。最长间隔天数为365天。expire_type 为 1 必填

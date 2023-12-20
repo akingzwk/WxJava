@@ -3,6 +3,7 @@ package com.binarywang.spring.starter.wxjava.cp.properties;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.context.properties.NestedConfigurationProperty;
 
 import java.io.Serializable;
 
@@ -10,7 +11,7 @@ import java.io.Serializable;
  * 企业微信接入相关配置属性
  *
  * @author yl
- * @date 2021/12/6
+ * created on  2021/12/6
  */
 @Data
 @NoArgsConstructor
@@ -62,6 +63,17 @@ public class WxCpProperties {
     private StorageType type = StorageType.memory;
 
     /**
+     * 指定key前缀
+     */
+    private String keyPrefix = "wx:cp";
+
+    /**
+     * redis连接配置
+     */
+    @NestedConfigurationProperty
+    private WxCpRedisProperties redis = new WxCpRedisProperties();
+
+    /**
      * http代理主机
      */
     private String httpProxyHost;
@@ -104,6 +116,18 @@ public class WxCpProperties {
     /**
      * 内存
      */
-    memory
+    memory,
+    /**
+     * jedis
+     */
+    jedis,
+    /**
+     * redisson
+     */
+    redisson,
+    /**
+     * redistemplate
+     */
+    redistemplate
   }
 }

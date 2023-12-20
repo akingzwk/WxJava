@@ -7,7 +7,7 @@ import me.chanjar.weixin.common.util.json.WxGsonBuilder;
 
 /**
  * @author hallkk
- * @date 2022/05/18
+ * created on  2022/05/18
  */
 @Data
 @NoArgsConstructor
@@ -24,6 +24,9 @@ public class WxPartnerPayScoreResult extends WxPayScoreResult {
   @SerializedName("sub_mchid")
   private String subMchid;
 
+  /**
+   * 子商户公众号下的用户标识
+   */
   @SerializedName("sub_openid")
   private String subOpenId;
 

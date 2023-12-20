@@ -1,6 +1,7 @@
 package com.github.binarywang.wxpay.service.impl;
 
 import com.github.binarywang.wxpay.bean.marketing.payroll.*;
+import com.github.binarywang.wxpay.bean.result.WxPayApplyBillV3Result;
 import com.github.binarywang.wxpay.exception.WxPayException;
 import com.github.binarywang.wxpay.service.PayrollService;
 import com.github.binarywang.wxpay.service.WxPayService;
@@ -17,7 +18,7 @@ import javax.crypto.IllegalBlockSizeException;
  * 微信支付-微工卡
  *
  * @author xiaoqiang
- * @date 2021/12/2
+ * created on  2021/12/2
  */
 @Slf4j
 @RequiredArgsConstructor
@@ -182,11 +183,14 @@ public class PayrollServiceImpl implements PayrollService {
      * @throws WxPayException the wx pay exception
      */
     @Override
-    public PreOrderWithAuthResult merchantFundWithdrawBillType(String billType, String billDate) throws WxPayException {
+    public WxPayApplyBillV3Result merchantFundWithdrawBillType(String billType, String billDate, String tarType) throws WxPayException {
         String url = String.format("%s/v3/merchant/fund/withdraw/bill-type/%s", payService.getPayBaseUrl(), billType);
         String query = String.format("?bill_date=%s", billDate);
+        if (StringUtils.isNotBlank(tarType)) {
+            query += String.format("&tar_type=%s", tarType);
+        }
         String response = payService.getV3(url + query);
-        return GSON.fromJson(response, PreOrderWithAuthResult.class);
+        return GSON.fromJson(response, WxPayApplyBillV3Result.class);
     }
 
 }

@@ -7,6 +7,8 @@ import java.io.Serializable;
 import java.util.List;
 
 /**
+ * The type Wx cp approval info.
+ *
  * @author element
  */
 @Data
@@ -25,4 +27,6 @@ public class WxCpApprovalInfo implements Serializable {
   @SerializedName("next_cursor")
   private Integer nextCursor;
 
+  @SerializedName("new_next_cursor")
+  private String newNextCursor;
 }
